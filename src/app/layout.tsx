@@ -2,7 +2,6 @@ import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import Header from "@components/header";
-import FilterPanel from "@components/filterpanel";
 
 const inter = Inter({
   subsets: ["latin"],
