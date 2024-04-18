@@ -119,7 +119,7 @@ export default function HomePage() {
             <div className="bg-gradient-to-b from-emerald-700/90 to-teal-700/90 border-slate-800 border-t-y">
                 <div className="container mx-auto px-4">
                     <div className="p-4 flex gap-4 justify-center">
-                        <span className="text-white p-2">Filter</span>
+                        <span className="text-white px-2">Filter</span>
                         <select className="rounded" value={filter} onChange={handleFilterChange}>
                             <option value="trending">Trending</option>
                             <option value="moviesPopular">Movies - Popular</option>
