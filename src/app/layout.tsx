@@ -12,7 +12,7 @@ const inter = Inter({
 export const metadata = {
   title: "Popcorn time!",
   description: "Get your movie and TV recommendations here!",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/popcorn.ico" }],
 };
 
 export default function RootLayout({
