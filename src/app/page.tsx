@@ -48,9 +48,9 @@ export default function HomePage() {
                 fetchTrending()
                 .then((res: TrendingResponse | undefined) => { 
                     if(res) {
-                        // Fetch top20 and shuffle the results for a varied response
-                        const top20: (MovieResult | TvResult | PersonResult)[] | undefined = res.results?.slice(0, 20);
-                        const shuffled: (MovieResult | TvResult | PersonResult)[] = top20?.sort(() => 0.5 - Math.random()) ?? [];
+                        // Fetch top30 and shuffle the results for a varied response
+                        const top30: (MovieResult | TvResult | PersonResult)[] | undefined = res.results?.slice(0, 30);
+                        const shuffled: (MovieResult | TvResult | PersonResult)[] = top30?.sort(() => 0.5 - Math.random()) ?? [];
                         const trendingMovies: (MovieResult | TvResult | PersonResult)[] = shuffled.slice(0, 6);
                         setResult(trendingMovies);
                     }
@@ -61,8 +61,8 @@ export default function HomePage() {
                 fetchMoviesPopular()
                 .then((res: PopularMoviesResponse | undefined) => {
                     if(res) {
-                        const top20: (MovieResult)[] | undefined = res.results?.slice(0, 20);
-                        const shuffled: (MovieResult)[] = top20?.sort(() => 0.5 - Math.random()) ?? [];
+                        const top30: (MovieResult)[] | undefined = res.results?.slice(0, 30);
+                        const shuffled: (MovieResult)[] = top30?.sort(() => 0.5 - Math.random()) ?? [];
                         const popularMovies: (MovieResult)[] = shuffled.slice(0, 6);
                         setResult(popularMovies);
                     }
@@ -73,8 +73,8 @@ export default function HomePage() {
                 fetchMoviesTopRated()
                 .then((res: TopRatedMoviesResponse | undefined) => {
                     if(res) {
-                        const top20: (MovieResult)[] | undefined = res.results?.slice(0, 20);
-                        const shuffled: (MovieResult)[] = top20?.sort(() => 0.5 - Math.random()) ?? [];
+                        const top30: (MovieResult)[] | undefined = res.results?.slice(0, 30);
+                        const shuffled: (MovieResult)[] = top30?.sort(() => 0.5 - Math.random()) ?? [];
                         const topRatedMovies: (MovieResult)[] = shuffled.slice(0, 6);
                         setResult(topRatedMovies);
                     }
@@ -85,8 +85,8 @@ export default function HomePage() {
                 fetchTvPopular()
                 .then((res: TvResultsResponse | undefined) => {
                     if(res) {
-                        const top20: (TvResult)[] | undefined = res.results?.slice(0, 20);
-                        const shuffled: (TvResult)[] = top20?.sort(() => 0.5 - Math.random()) ?? [];
+                        const top30: (TvResult)[] | undefined = res.results?.slice(0, 30);
+                        const shuffled: (TvResult)[] = top30?.sort(() => 0.5 - Math.random()) ?? [];
                         const popularTv: (TvResult)[] = shuffled.slice(0, 6);
                         setResult(popularTv);
                     }
@@ -97,8 +97,8 @@ export default function HomePage() {
                 fetchTvTopRated()
                 .then((res: TvResultsResponse | undefined) => {
                     if(res) {
-                        const top20: (TvResult)[] | undefined = res.results?.slice(0, 20);
-                        const shuffled: (TvResult)[] = top20?.sort(() => 0.5 - Math.random()) ?? [];
+                        const top30: (TvResult)[] | undefined = res.results?.slice(0, 30);
+                        const shuffled: (TvResult)[] = top30?.sort(() => 0.5 - Math.random()) ?? [];
                         const topRatedTv: (TvResult)[] = shuffled.slice(0, 6);
                         setResult(topRatedTv);
                     }
@@ -133,16 +133,24 @@ export default function HomePage() {
             <div className="container mx-auto px-4">
                 <div className="card-container grid gap-4 py-2">
                     {result?.map((res: MovieResult | TvResult | PersonResult) => {
-                        let name = '';
-                        if ('title' in res && res.title) {
+                        let name, description, imageUrl;
+
+                        if('title' in res && res.title) {
                             name = res.title;
-                        } else if ('name' in res && res.name) {
+                        } else if('name' in res && res.name) {
                             name = res.name;
                         }
 
-                        let description = '';
-                        if ('overview' in res && res.overview) {
+                        if('overview' in res && res.overview) {
                             description = res.overview;
+                        } else {
+                            description = '';
+                        }
+
+                        if('poster_path' in res && res.poster_path) {
+                            imageUrl = `https://image.tmdb.org/t/p/w500${res.poster_path}`;
+                        } else if('profile_path' in res && res.profile_path) {
+                            imageUrl = `https://image.tmdb.org/t/p/w500${res.profile_path}`;
                         }
 
                         return (
@@ -150,9 +158,9 @@ export default function HomePage() {
                                 key={res.id}
                                 movie={{
                                     id: res.id,
-                                    name: name,
+                                    name: name ?? '',
                                     description: description,
-                                    imageUrl: `https://image.tmdb.org/t/p/w500${res.poster_path}`,
+                                    imageUrl: imageUrl ?? '',
                                 }}
                             />
                         );
