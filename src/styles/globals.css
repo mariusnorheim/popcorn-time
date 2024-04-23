@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 
+body {
+  margin-bottom: 1.5rem;
+}
+
 .card-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
