@@ -1,10 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 
 body {
   margin-bottom: 1.5rem;
+  color-scheme: dark;
 }
 
 .card-container {

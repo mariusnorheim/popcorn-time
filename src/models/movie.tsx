@@ -3,4 +3,5 @@ export default interface Movie {
     name: string;
     description: string;
     imageUrl: string;
+    rating?: number;
 }
