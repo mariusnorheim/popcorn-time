@@ -24,6 +24,11 @@ function getCacheKey(type: "movie" | "tv", id: number): string {
   return `${type}-${id}`;
 }
 
+// Export for testing purposes
+export function clearDetailsCache(): void {
+  detailsCache.clear();
+}
+
 export default function DetailModal({ isOpen, onClose, mediaType, mediaId }: Props) {
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" });
   const dialogRef = useRef<HTMLDialogElement>(null);
