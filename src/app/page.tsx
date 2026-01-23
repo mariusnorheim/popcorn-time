@@ -300,8 +300,11 @@ export default function HomePage() {
                   <div className="py-6 text-center text-slate-200">Loading…</div>
                 ) : null}
                 {!isLoading && !error && result.length === 0 ? (
-                  <div className="py-10 text-center text-slate-300">
-                    No results. Try a different search or filter.
+                  <div className="mt-4 rounded-xl border border-slate-500/30 bg-slate-800/50 px-4 py-6 text-center">
+                    <div className="text-sm text-slate-200">No matches found.</div>
+                    <div className="mt-1 text-sm text-slate-400">
+                      Try a broader search or adjust filters.
+                    </div>
                   </div>
                 ) : null}
                 <div className="card-container grid gap-4 py-2">

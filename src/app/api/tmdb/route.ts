@@ -62,37 +62,90 @@ export async function GET(req: Request) {
 
   try {
     if (q && q.length > 0) {
-      // Prefer matching cast to return titles featuring the person.
-      let resolvedCastId = castId;
-      if (!resolvedCastId) {
-        const people = await moviedb.searchPerson({ query: q, page: 1 });
-        resolvedCastId = people?.results?.[0]?.id;
-      }
+      // ROOT CAUSE FIX: Search must work for both title queries ("Avatar") and actor
+      // queries ("Tom Hardy"). We run both searches in parallel and combine results:
+      // - Title matches come first (so "Avatar" finds the movie)
+      // - Person filmography is appended (so "Tom Hardy" finds his movies)
+      // - Results are deduplicated by ID
 
-      if (resolvedCastId) {
+      // If caller already provided a castId, use discover with that cast member.
+      if (castId) {
         const res =
           type === "movie"
             ? await moviedb.discoverMovie({
-                with_cast: String(resolvedCastId),
+                with_cast: String(castId),
                 include_adult: false,
                 include_video: false,
                 page,
                 sort_by: "popularity.desc",
               })
             : await moviedb.discoverTv({
-                with_cast: String(resolvedCastId),
+                with_cast: String(castId),
                 page,
                 sort_by: "popularity.desc",
               });
         return NextResponse.json(res);
       }
 
-      // Fallback: search by title if no person match.
-      const res =
+      // Run title search and person search in parallel for better performance.
+      const [titleRes, peopleRes] = await Promise.all([
         type === "movie"
-          ? await moviedb.searchMovie({ query: q, page, include_adult: false })
-          : await moviedb.searchTv({ query: q, page });
-      return NextResponse.json(res);
+          ? moviedb.searchMovie({ query: q, page, include_adult: false })
+          : moviedb.searchTv({ query: q, page }),
+        // Only search people on first page to avoid duplicate person lookups
+        page === 1 ? moviedb.searchPerson({ query: q, page: 1 }) : null,
+      ]);
+
+      const titleResults = titleRes?.results ?? [];
+      const person = peopleRes?.results?.[0];
+
+      // If we found a matching person, fetch their filmography
+      let personFilmography: typeof titleResults = [];
+      if (person?.id) {
+        const filmRes =
+          type === "movie"
+            ? await moviedb.discoverMovie({
+                with_cast: String(person.id),
+                include_adult: false,
+                include_video: false,
+                page: 1,
+                sort_by: "popularity.desc",
+              })
+            : await moviedb.discoverTv({
+                with_cast: String(person.id),
+                page: 1,
+                sort_by: "popularity.desc",
+              });
+        personFilmography = (filmRes?.results ?? []) as typeof titleResults;
+      }
+
+      // Combine: title matches first, then person filmography, deduplicated by ID
+      const seenIds = new Set<number>();
+      const combined: typeof titleResults = [];
+
+      for (const item of titleResults) {
+        if (item.id && !seenIds.has(item.id)) {
+          seenIds.add(item.id);
+          combined.push(item);
+        }
+      }
+      for (const item of personFilmography) {
+        if (item.id && !seenIds.has(item.id)) {
+          seenIds.add(item.id);
+          combined.push(item);
+        }
+      }
+
+      // Return combined results with pagination info from title search
+      return NextResponse.json({
+        ...titleRes,
+        results: combined,
+        // Adjust total if we added person results
+        total_results: Math.max(
+          titleRes?.total_results ?? 0,
+          combined.length
+        ),
+      });
     }
 
     if (sort === "trending") {
