@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import type { MovieResult, TrendingResponse, TvResult } from "moviedb-promise";
 import Card from '@components/card';
+import DetailModal from '@components/detail-modal';
 import FilterBar, {
   type Genre,
   type MediaType,
@@ -108,6 +109,20 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedMediaId, setSelectedMediaId] = useState<number | null>(null);
+
+  const openModal = (id: number) => {
+    setSelectedMediaId(id);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedMediaId(null);
+  };
 
   // Load genres whenever the media type changes (movies/TV only).
   useEffect(() => {
@@ -348,6 +363,7 @@ export default function HomePage() {
                                     imageUrl: imageUrl ?? '',
                                     rating,
                                 }}
+                                onClick={res.id ? () => openModal(res.id!) : undefined}
                             />
                         );
                     })}
@@ -376,6 +392,12 @@ export default function HomePage() {
                   </div>
                 ) : null}
             </div>
+            <DetailModal
+              isOpen={modalOpen}
+              onClose={closeModal}
+              mediaType={mediaType}
+              mediaId={selectedMediaId}
+            />
         </main>
     );
 };

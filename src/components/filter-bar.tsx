@@ -84,7 +84,7 @@ export default function FilterBar(props: Props) {
       : "Search TV shows (title or actor)…";
 
   return (
-    <div className="sticky top-0 z-10 border-b border-white/10 bg-slate-950/70 backdrop-blur">
+    <div className="sticky top-0 z-20 border-b border-white/10 bg-slate-950 backdrop-blur">
       <div className="container mx-auto px-4 py-3">
         <div className="flex flex-col gap-3">
           {/* Search */}

@@ -5,29 +5,37 @@ interface CardProps {
     movie: Movie;
     meta?: string;
     footer?: React.ReactNode;
+    onClick?: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ movie, meta, footer }) => {
+const Card: React.FC<CardProps> = ({ movie, meta, footer, onClick }) => {
   const hasImage = Boolean(movie.imageUrl && movie.imageUrl.trim().length > 0);
 
   return (
-    <article className="relative max-w-m overflow-hidden rounded-2xl border border-white/8 bg-slate-900/80 shadow-lg shadow-black/50 m-2 transition-transform transition-shadow hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/70">
-      <div className="overflow-hidden border-b border-white/10">
+    <article
+      className="relative max-w-m overflow-hidden rounded-2xl border border-white/8 bg-slate-900/80 shadow-lg shadow-black/50 m-2 transition-transform transition-shadow hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/70 cursor-pointer"
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
+    >
+      {/* Image container with 2:3 aspect ratio for movie posters */}
+      <div className="relative aspect-[2/3] overflow-hidden border-b border-white/10">
         {typeof movie.rating === "number" ? (
-          <div className="absolute left-3 top-3 z-10 rounded-full bg-amber-400 px-3 py-1 text-xs font-semibold text-slate-950 shadow-md shadow-amber-900/40">
+          <div className="absolute left-3 top-3 z-[1] rounded-full bg-amber-400 px-3 py-1 text-xs font-semibold text-slate-950 shadow-md shadow-amber-900/40">
             ★ {movie.rating.toFixed(1)}
           </div>
         ) : null}
         {hasImage ? (
           <img
-            className="w-full object-cover h-80"
+            className="absolute inset-0 h-full w-full object-cover"
             src={movie.imageUrl}
             alt={movie.name}
             width="400"
-            height="400"
+            height="600"
           />
         ) : (
-          <div className="flex h-80 w-full items-center justify-center bg-slate-900 text-slate-300">
+          <div className="flex h-full w-full items-center justify-center bg-slate-900 text-slate-300">
             No image
           </div>
         )}
