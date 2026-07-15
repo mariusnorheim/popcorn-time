@@ -339,7 +339,7 @@ export default function HomePage() {
                         }
 
                         if('poster_path' in res && res.poster_path) {
-                            imageUrl = `https://image.tmdb.org/t/p/w400${res.poster_path}`;
+                            imageUrl = `https://image.tmdb.org/t/p/w4000${res.poster_path}`;
                         } else if('profile_path' in res && res.profile_path) {
                             imageUrl = `https://image.tmdb.org/t/p/w400${res.profile_path}`;
                         }
